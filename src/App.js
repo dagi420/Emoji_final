@@ -1,78 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
+// App.js
+import React, { useState } from 'react';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
+import GamePage from './components/GamePage';
+
 
 const App = () => {
-  const [emojis, setEmojis] = useState([]);
-  const [selectedEmojis, setSelectedEmojis] = useState([]);
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    initializeGame();
-    const timer = setInterval(() => {
-      setTimeLeft(prevTime => prevTime > 0 ? prevTime - 1 : 0);
-    }, 1000);
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    //const loggedInPhoneNumber =   phoneNumber;
 
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (timeLeft === 0) endGame();
-  }, [timeLeft]);
-
-  const initializeGame = () => {
-    const emojiSet = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍"];
-    let randomEmojis = [...emojiSet];
-    const duplicatedEmoji = randomEmojis[Math.floor(Math.random() * randomEmojis.length)];
-    randomEmojis.push(duplicatedEmoji);
-    randomEmojis.sort(() => Math.random() - 0.5);
-    randomEmojis = randomEmojis.slice(0, 16);
-
-    setEmojis(randomEmojis);
-    setSelectedEmojis([]);
+    //setUserPhoneNumber(loggedInPhoneNumber);
   };
 
-  const handleEmojiClick = (index) => {
-    if (selectedEmojis.length < 2 && !selectedEmojis.includes(index)) {
-      setSelectedEmojis([...selectedEmojis, index]);
-
-      if (selectedEmojis.length === 1) {
-        const firstEmoji = emojis[selectedEmojis[0]];
-        const secondEmoji = emojis[index];
-        if (firstEmoji === secondEmoji) {
-          setScore(score + 1);
-          initializeGame(); // Reset game for next round
-        }
-      }
-    } else if (selectedEmojis.length === 2) {
-      setSelectedEmojis([index]);
-    }
-  };
-
-  const endGame = () => {
-    alert(`Time's up! Your score: ${score}`);
-    setScore(0);
-    setTimeLeft(60);
-    initializeGame();
+  const handleRegister = () => {
+    // Perform any necessary actions upon registration success
+    setIsLoggedIn(true);
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Emoji Matching Game</h1>
-        <div>Score: {score}</div>
-        <div>Time Left: {timeLeft}</div>
-        <div className="emoji-grid">
-          {emojis.map((emoji, index) => (
-            <button
-              key={index}
-              className={selectedEmojis.includes(index) ? 'selected' : ''}
-              onClick={() => handleEmojiClick(index)}
-            >
-              {emoji}
-            </button>
-          ))}
-        </div>
+        {isLoggedIn ? (
+          <GamePage />
+        ) : (
+          <>
+            <LoginPage onLogin={handleLogin} />
+            <RegisterPage onRegister={handleRegister} />
+          </>
+        )}
       </header>
     </div>
   );
